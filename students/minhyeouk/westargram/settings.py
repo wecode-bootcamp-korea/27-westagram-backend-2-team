@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 # 파이썬 모듈
-from pathlib        import Path #기존에 settings.py 에 있는 코드
+from pathlib        import Path
 
 # 내가 만든 사용자 모듈
 from my_settings    import DATABASES, SECRET_KEY
@@ -156,5 +156,4 @@ CORS_ALLOW_HEADERS = (
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-		#만약 허용해야할 추가적인 헤더키가 있다면?(사용자정의 키) 여기에 추가하면 됩니다.
 )
