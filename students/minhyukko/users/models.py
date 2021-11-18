@@ -8,3 +8,5 @@ class User(models.Model):
     password    = models.CharField(max_length=300)
     address     = models.CharField(max_length=20)
     information = models.CharField(max_length= 250)
+    class Meta:
+        db_table = 'users'
