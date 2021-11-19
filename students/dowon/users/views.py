@@ -18,7 +18,8 @@ class SignupView(View):
                 return JsonResponse({'message' : 'ALREADY_EXISTS'}, status = 400)
 
             regex_email    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9_-]+\.[a-zA-Z0-9-.]+$'
-            regex_password = '\S{8,25}'
+            regex_password = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}"
+
             if re.match(regex_email, email) is None:
                 return JsonResponse({'message' : 'INVALID_EMAIL'}, status = 400)
             if re.match(regex_password, password) is None:
@@ -32,3 +33,4 @@ class SignupView(View):
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+
