@@ -1,4 +1,4 @@
-import json, bcrypt, jwt, re
+import json, re
 
 from django.views import View
 from django.http import JsonResponse, HttpResponse
@@ -15,7 +15,6 @@ class SignupView(View):
             email        = data['email']
             password     = data['password']
             phone_number = data['phone_number']
-            information  = data['information']
 
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'message' : 'ALREADY_EXISTS'}, status = 400)
@@ -28,15 +27,11 @@ class SignupView(View):
             if re.match(regex_password, password) is None:
                 return JsonResponse({'message' : 'INVALID_PASSWORD'}, status = 400)
 
-            #password       = data['password'].encode('utf-8')
-            #password_crypt = bcrypt.hashpw(password, bcrypt.gensalt()).decode('utf-8')
-
             User.objects.create(
                 name         = name, 
                 email        = email, 
                 password     = password, 
-                phone_number = phone_number,
-                information  = information
+                phone_number = phone_number
             )
             return JsonResponse({'message' : 'SUCCESS!'}, status=201)
 
