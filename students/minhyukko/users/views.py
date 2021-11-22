@@ -33,7 +33,7 @@ class UserView(View):
             return JsonResponse({'message':'SUCESS'},status=201)
 
         except ValidationError as e:
-            return JsonResponse({'message': e.mmessage},status=400)
+            return JsonResponse({'message': e.message},status=400)
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
