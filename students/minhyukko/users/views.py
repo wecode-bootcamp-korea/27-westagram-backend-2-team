@@ -1,4 +1,4 @@
-import json, re
+import json
  
 from django.views           import View
 from django.http            import JsonResponse
@@ -6,23 +6,17 @@ from django.core.exceptions import ValidationError
 from django.db.models       import Q
 
 from .models                import User
+from .validator             import *
 
 class SignupView(View):
     def post(self, request):
         data            = json.loads(request.body)
-        regexr_email    = '[a-zA-Z0-9]+\.?\w*@\w+[.]?\w*[.]+\w{2,3}'
-        regexr_password = '(?=.*[A-Za-z])(?=.*\d)(?=.*[~!@#$^&*()+|=])[A-Za-z\d~!@#$%^&*()+|=]{8,}'
-
+        
         try:
-            if data.get('email') is None:
-                raise KeyError('Email_is_Blank')
-            if data.get('password') is None:
-                raise KeyError('Password_is_Blank')
-            if not re.match(regexr_email, data['email']) or not re.match(regexr_password,data['password']):
-                raise ValidationError('Invalid_Key')
-            if User.objects.filter(email = data['email']).exists():
-                return JsonResponse({'message':'DUPLICATED_EMAIL'}, status=400)
-
+            is_blank(data.get('email'), data.get('password'))
+            is_regexr(data['email'], data['password'])
+            is_duplicated(data['email'])
+            
             User.objects.create(
                 name        = data['name'],
                 email       = data['email'],
