@@ -15,6 +15,7 @@ class SignupView(View):
             email        = data['email']
             password     = data['password']
             phone_number = data['phone_number']
+            information  = data.get('information', None)
 
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'message' : 'ALREADY_EXISTS'}, status = 400)
@@ -31,7 +32,8 @@ class SignupView(View):
                 name         = name, 
                 email        = email, 
                 password     = password, 
-                phone_number = phone_number
+                phone_number = phone_number,
+                information  = information
             )
             return JsonResponse({'message' : 'SUCCESS!'}, status=201)
 
