@@ -5,8 +5,9 @@ from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
 
 from .models                import User
+# from .validation            import Is_validate
 
-class UserView(View):
+class SignupView(View):
     def post(self, request):
         data            = json.loads(request.body)
         regexr_email    = '[a-zA-Z0-9]+\.?\w*@\w+[.]?\w*[.]+\w{2,3}'
@@ -17,7 +18,7 @@ class UserView(View):
                 raise KeyError('Email_is_Blank')
             if data.get('password') is None:
                 raise KeyError('Password_is_Blank')
-            if re.match(regexr_email, data['email']) is None or re.match(regexr_password,data['password']) is None:
+            if not re.match(regexr_email, data['email']) or not re.match(regexr_password,data['password']):
                 raise ValidationError('Invalid_Key')
             if User.objects.filter(email = data['email']).exists():
                 return JsonResponse({'message':'DUPLICATED_EMAIL'}, status=400)
@@ -37,7 +38,7 @@ class UserView(View):
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
     
-class LoginView(View):
+class SigninView(View):
     def post(self, request):
         data = json.loads(request.body)
 
