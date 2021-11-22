@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views import View
 
 from users.models import User
-from users.lib.validation import email_validation, password_validation
+from users.my_lib.validation import email_validation, password_validation
 
 class SignUpView(View) :
     def post(self, request):
