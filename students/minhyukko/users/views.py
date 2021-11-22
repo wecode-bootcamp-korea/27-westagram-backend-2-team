@@ -3,7 +3,6 @@ import json, re
 from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
-from django.db.utils        import IntegrityError
 
 from .models                import User
 
@@ -37,3 +36,22 @@ class UserView(View):
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+    
+class LoginView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+
+        try:
+            password = User.objects.get(email = data['email']).password
+            email    = User.objects.get(password = data['password']).email
+                
+            if not password == data['password']:
+                return JsonResponse({'message':'INVALID_USER'}, status = 401)
+
+            return JsonResponse({'message':'SUCCESS'},status = 200)
+
+        except User.DoesNotExist:
+            return JsonResponse({'message':'INVALID_USER'}, status = 401)
+
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status = 400)
