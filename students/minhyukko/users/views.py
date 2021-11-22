@@ -15,9 +15,9 @@ class UserView(View):
 
         try:
             if data.get('email') is None:
-                raise ValidationError('Email_is_Blank')
+                raise KeyError('Email_is_Blank')
             if data.get('password') is None:
-                raise ValidationError('Password_is_Blank')
+                raise KeyError('Password_is_Blank')
             if re.match(regexr_email, data['email']) is None or re.match(regexr_password,data['password']) is None:
                 raise ValidationError('Invalid_Key')
             if User.objects.filter(email = data['email']).exists():
@@ -32,6 +32,5 @@ class UserView(View):
             )
             return JsonResponse({'message':'SUCESS'},status=201)
 
-        except ValidationError:
+        except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
-            
