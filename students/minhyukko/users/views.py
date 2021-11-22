@@ -20,6 +20,8 @@ class UserView(View):
                 raise ValidationError('Password_is_Blank')
             if re.match(regexr_email, data['email']) is None or re.match(regexr_password,data['password']) is None:
                 raise ValidationError('Invalid_Key')
+            if User.objects.filter(email = data['email']).exists():
+                return JsonResponse({'message':'DUPLICATED_EMAIL'}, status=400)
 
             User.objects.create(
                 name        = data['name'],
@@ -32,6 +34,4 @@ class UserView(View):
 
         except ValidationError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
-
-        except IntegrityError:
-            return JsonResponse({'message':'Duplicated_Email'}, status=400)
+            
