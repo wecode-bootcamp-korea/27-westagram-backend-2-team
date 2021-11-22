@@ -27,16 +27,13 @@ class SignUpView(View) :
                 return JsonResponse({'MESSAGE': 'PASSWORD_INVALID'}, status=400)
 
             User.objects.create(
-                name = name,
-                email = email,
-                password = password,
+                name         = name,
+                email        = email,
+                password     = password,
                 phone_number = phone_number,
-                description = description
+                description  = description
             )
             return JsonResponse({'MESSAGE': 'CREATED'}, status=201)
 
         except KeyError :
             return  JsonResponse({'MESSAGE': 'KEY_ERROR'}, status=400)
-
-        except Exception as e :
-            return e.message
