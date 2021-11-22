@@ -6,7 +6,6 @@ from django.core.exceptions import ValidationError
 from django.db.models       import Q
 
 from .models                import User
-# from .validation            import Is_validate
 
 class SignupView(View):
     def post(self, request):
