@@ -312,6 +312,7 @@ tags
 [._]*.un~
 
 ### VisualStudioCode ###
+**/.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -362,3 +363,5 @@ zsdoc/data
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode,vim,macos,linux,zsh
 
 my_settings.py
+
+setttings.json
