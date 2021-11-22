@@ -3,6 +3,7 @@ import json, re
 from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
+from django.db.models       import Q
 
 from .models                import User
 # from .validation            import Is_validate
@@ -43,12 +44,10 @@ class SigninView(View):
         data = json.loads(request.body)
 
         try:
-            email_password = User.objects.get(email = data['email']).password
-                
-            if email_password != data['password']:
-                return JsonResponse({'message':'INVALID_USER'}, status = 401)
+            if User.objects.filter(Q(email = data['email']) & Q(password=data['password'])).exists():
+                return JsonResponse({'message':'SUCCESS'},status = 200)
 
-            return JsonResponse({'message':'SUCCESS'},status = 200)
+            return JsonResponse({'message':'INVALID_USER'}, status = 401)
 
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status = 401)
