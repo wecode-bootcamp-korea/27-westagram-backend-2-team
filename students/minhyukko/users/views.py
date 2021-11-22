@@ -26,7 +26,7 @@ class UserView(View):
                 email       = data['email'],
                 password    = data['password'],
                 address     = data['address'],
-                information = data['information']
+                information = data.get('information')
             )
             return JsonResponse({'message':'SUCESS'},status=201)
 
