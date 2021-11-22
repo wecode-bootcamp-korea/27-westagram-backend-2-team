@@ -15,8 +15,8 @@ class SignupView(View):
             email        = data['email']
             password     = data['password']
             phone_number = data['phone_number']
-            address      = data['address']
-            job          = data['job']
+            address      = data.get('address', '')
+            job          = data.get('job', '')
 
             email_regex    = '(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)'
             password_regex = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,18}$'
