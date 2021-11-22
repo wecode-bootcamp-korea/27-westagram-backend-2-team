@@ -1,9 +1,10 @@
 import json, re
-from django.views    import View
-from django.http     import JsonResponse, HttpResponse
+from django.views     import View
+from django.http      import JsonResponse, HttpResponse
+from django.db.models import Q
 
-from .models         import User
-from my_settings     import SECRET_KEY, DATABASES
+from .models          import User
+from my_settings      import SECRET_KEY, DATABASES
 
 class SignupView(View):
     def post(self, request):
@@ -47,10 +48,10 @@ class SigninView(View):
             if not User.objects.filter(email=data['email']).exists():
                 return JsonResponse({'message': 'INVALID_ERROR'}, status=401)
     
-            if not User.objects.filter(password=data['password']):
+            if not User.objects.filter(password=data['password']).exists():
                return JsonResponse({'massage': 'INVALID_ERROR'}, status=401)
 
-            if User.objects.filter(email=data['email']) and User.objects.filter(password=data['password']):
+            if User.objects.filter(Q(email=data['email']) & Q(password=data['password'])).exists():
                 return JsonResponse({'message': 'SUCCESS'}, status=200)
 
         except KeyError:
