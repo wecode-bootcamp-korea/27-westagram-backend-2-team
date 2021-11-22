@@ -19,11 +19,11 @@ class UserView(View) :
                 return JsonResponse({'MESSAGE': 'PASSWORD_INVALID'}, status=400)
 
             User.objects.create(
-            name                 = data['name'],
-            email                 = data['email'],
-            password          = data['password'],
+            name         = data['name'],
+            email        = data['email'],
+            password     = data['password'],
             phone_number = data['phone'],
-            description        = data['descr'],
+            description  = data['descr'],
             )
             return JsonResponse({'MESSAGE': 'CREATED'}, status=201)
 
