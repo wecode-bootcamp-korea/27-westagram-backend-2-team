@@ -10,16 +10,12 @@ def email_validation(email) :
 
 def password_validation(password) :
     if len(password) < 8 :
-        print("최소 8자 이상 입력해주세요.")
         return False
     elif re.search('[\d]+', password) is None:
-        print("최소 하나의 숫자가 포함되어야 합니다.")
         return False
     elif re.search('[\D]+', password) is None:
-        print("최소 하나의 문자가 포함되어야 합니다.")
         return False
     elif re.search('[,./~!@#$%^&*()><]+', password) is None:
-        print("최소 하나의 특수문자가 포함되어야 합니다.")
         return False
     else :
         return True
