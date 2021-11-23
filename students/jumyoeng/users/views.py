@@ -38,8 +38,6 @@ class SignUpView(View) :
             return  JsonResponse({'MESSAGE': 'KEY_ERROR'}, status=400)
         except ValidationError :
             return  JsonResponse({'MESSAGE': 'Validation_ERROR'}, status=402)
-        except Model.DoesNotExist :
-            return JsonResponse({'MESSAGE': 'MODEL_DOES_NOT_EXIST'}, status=400)
 
 class SignInView(View) :
     def post(self, request) :
