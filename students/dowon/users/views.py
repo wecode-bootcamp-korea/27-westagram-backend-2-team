@@ -5,7 +5,7 @@ from django.http      import JsonResponse, HttpResponse
 
 from .models          import User
 from my_settings      import SECRET_KEY, DATABASES
-from .validation      import regex_match
+from .validation      import validate_email, validate_password
 
 class SignupView(View):
     def post(self, request):
@@ -18,10 +18,8 @@ class SignupView(View):
             phone_number = data['phone_number']
             information  = data.get('information', None)
             
-            regex_match(
-                email,
-                password,
-            )
+            validate_email(email)
+            validate_password(password)
 
             User.objects.create(
                 name         = name, 
