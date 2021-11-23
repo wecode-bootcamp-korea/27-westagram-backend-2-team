@@ -5,7 +5,7 @@ from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
 
 from .models                import User
-from .validator             import *
+from .validator             import is_blank, email_validate, password_validate, is_duplicated
 
 class SignupView(View):
     def post(self, request):
@@ -13,9 +13,12 @@ class SignupView(View):
             data = json.loads(request.body)
 
             is_blank(data.get('email'), data.get('password'))
-            is_regexr(data['email'], data['password'])
-            is_duplicated(data['email'])
+            email_validate(data['email'])
+            password_validate(data['password'])
             
+            if not User.objects.filter(email = data['email']).exists():
+                raise ValidationError('DUPLICATED_EMAIL')
+
             User.objects.create(
                 name        = data['name'],
                 email       = data['email'],
@@ -35,15 +38,13 @@ class SigninView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user_pwd = User.objects.get(email=data['email']).password
+            user = User.objects.filter(email = data['email'], password = data['password'])
             
-            if user_pwd != data['password']:
+            if not user.exists():
                 raise ValidationError('INVALID_USER')
 
             return JsonResponse({'message': 'SUCCESS'})
         
-        except User.DoesNotExist:
-            return JsonResponse({'message':'INVALID_USER'}, status=401)
         except ValidationError as e:
             return JsonResponse({'message' : e.message}, status = 401)
         except KeyError:
