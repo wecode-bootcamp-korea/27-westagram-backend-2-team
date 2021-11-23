@@ -46,13 +46,10 @@ class SigninView(View):
             if not User.objects.filter(password=data['password']).exists():
                return JsonResponse({'massage': 'INVALID_PASSWORD'}, status=401)
 
-            if User.objects.filter(email=data['email']) and User.objects.filter(password=data['password']).exists():
+            if User.objects.filter(email=data['email'], password=data['password']).exists():
                 return JsonResponse({'message': 'SUCCESS'}, status=200)
 
         except KeyError:
             return JsonResponse({'massage': 'KEY_ERROR'}, status=400)
         except User.DoesNotExist:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=401)
-
-
-        
