@@ -1,7 +1,7 @@
 import json
 
-from django.views           import View
-from django.http            import JsonResponse, HttpResponse
+from django.views     import View
+from django.http      import JsonResponse, HttpResponse
 
 from .models          import User
 from my_settings      import SECRET_KEY, DATABASES
