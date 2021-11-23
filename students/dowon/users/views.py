@@ -37,15 +37,11 @@ class SigninView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            
-            if not User.objects.filter(email=data['email']).exists():
-                return JsonResponse({'message': 'INVALID_EMAIL'}, status=401)
-    
-            if not User.objects.filter(password=data['password']).exists():
-               return JsonResponse({'massage': 'INVALID_PASSWORD'}, status=401)
 
             if User.objects.filter(email=data['email'], password=data['password']).exists():
                 return JsonResponse({'message': 'SUCCESS'}, status=200)
+
+            return JsonResponse({'massage': 'INVALID_USER'}, status=401)
 
         except KeyError:
             return JsonResponse({'massage': 'KEY_ERROR'}, status=400)
