@@ -5,7 +5,6 @@ from django.views import View
 
 from users.models import User
 from users.my_lib.validation import email_validation, password_validation
-from users.my_lib.securePsw import psw_check, psw_hash
 
 class SignUpView(View) :
     def post(self, request):
@@ -30,7 +29,7 @@ class SignUpView(View) :
             User.objects.create(
                 name         = name,
                 email        = email,
-                password     = psw_hash(password).decode('utf-8'),
+                password     = bcrypt.hashpw( password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
                 phone_number = phone_number,
                 description  = description
             )
@@ -43,10 +42,11 @@ class SignInView(View) :
     def post(self, request) :
         try :
             data = json.loads(request.body)
-            user = User.objects.filter(email=data['email'])
+            user = User.objects.get(email=data['email'])
+            password = data['password']
 
             if user :
-                if psw_check(data['password'], user[0].password) :
+                if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')) :
                     return JsonResponse({'MESSAGE': 'SUCCESS'}, status=200)
                 else :
                     return JsonResponse({'MESSAGE': 'INVALID_USER / PASSWORD_ERROR'}, status=401)
