@@ -1,4 +1,4 @@
-import json
+import json, bcrypt
  
 from django.views           import View
 from django.http            import JsonResponse
@@ -19,10 +19,12 @@ class SignupView(View):
             if User.objects.filter(email = data['email']).exists():
                 raise ValidationError('DUPLICATED_EMAIL')
 
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+            
             User.objects.create(
                 name        = data['name'],
                 email       = data['email'],
-                password    = data['password'],
+                password    = hashed_password.decode(),
                 address     = data['address'],
                 information = data.get('information')
             )
@@ -38,13 +40,15 @@ class SigninView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user = User.objects.filter(email = data['email'], password = data['password'])
+            user = User.objects.get(email = data['email'])
             
-            if not user.exists():
+            if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')): 
                 raise ValidationError('INVALID_USER')
 
             return JsonResponse({'message': 'SUCCESS'})
         
+        except User.DoesNotExist:
+            return JsonResponse({'message':'INVALID_USER'}, status=401)
         except ValidationError as e:
             return JsonResponse({'message' : e.message}, status = 401)
         except KeyError:
