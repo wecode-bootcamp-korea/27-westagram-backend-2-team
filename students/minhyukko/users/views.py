@@ -5,7 +5,7 @@ from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
 
 from .models                import User
-from .validator             import is_blank, email_validate, password_validate, is_duplicated
+from .validator             import is_blank, email_validate, password_validate
 
 class SignupView(View):
     def post(self, request):
@@ -16,7 +16,7 @@ class SignupView(View):
             email_validate(data['email'])
             password_validate(data['password'])
             
-            if not User.objects.filter(email = data['email']).exists():
+            if User.objects.filter(email = data['email']).exists():
                 raise ValidationError('DUPLICATED_EMAIL')
 
             User.objects.create(
