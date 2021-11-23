@@ -1,10 +1,11 @@
-import json
+import json, bcrypt
 
 from django.http import JsonResponse
 from django.views import View
 
 from users.models import User
 from users.my_lib.validation import email_validation, password_validation
+from users.my_lib.securePsw import psw_check, psw_hash
 
 class SignUpView(View) :
     def post(self, request):
@@ -29,7 +30,7 @@ class SignUpView(View) :
             User.objects.create(
                 name         = name,
                 email        = email,
-                password     = password,
+                password     = psw_hash(password).decode('utf-8'),
                 phone_number = phone_number,
                 description  = description
             )
@@ -42,10 +43,14 @@ class SignInView(View) :
     def post(self, request) :
         try :
             data = json.loads(request.body)
+            user = User.objects.filter(email=data['email'])
 
-            if User.objects.filter(email=data['email'], password = data['password']).exists() :
-                return JsonResponse({'MESSAGE': 'SUCCESS'}, status=200)
-            return JsonResponse({'MESSAGE': 'INVALID_USER'}, status=401)
+            if user :
+                if psw_check(data['password'], user[0].password) :
+                    return JsonResponse({'MESSAGE': 'SUCCESS'}, status=200)
+                else :
+                    return JsonResponse({'MESSAGE': 'INVALID_USER / PASSWORD_ERROR'}, status=401)
+            return JsonResponse({'MESSAGE': 'INVALID_USER / EMAIL_ERROR'}, status=401)
 
         except KeyError :
             return  JsonResponse({'MESSAGE': 'KEY_ERROR'}, status=400)
