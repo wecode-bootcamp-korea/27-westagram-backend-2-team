@@ -46,4 +46,4 @@ class SigninView(View):
         except KeyError:
             return JsonResponse({'massage': 'KEY_ERROR'}, status=400)
         except User.DoesNotExist:
-            return JsonResponse({'message' : 'KEY_ERROR'}, status=401)
+            return JsonResponse({'message': 'INVALID_USER'}, status=401)
