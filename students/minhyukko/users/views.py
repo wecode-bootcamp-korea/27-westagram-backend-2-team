@@ -3,16 +3,15 @@ import json
 from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
-from django.db.models       import Q
 
 from .models                import User
 from .validator             import *
 
 class SignupView(View):
     def post(self, request):
-        data            = json.loads(request.body)
-        
         try:
+            data = json.loads(request.body)
+
             is_blank(data.get('email'), data.get('password'))
             is_regexr(data['email'], data['password'])
             is_duplicated(data['email'])
@@ -34,16 +33,18 @@ class SignupView(View):
     
 class SigninView(View):
     def post(self, request):
-        data = json.loads(request.body)
-
         try:
-            if User.objects.filter(Q(email = data['email']) & Q(password=data['password'])).exists():
-                return JsonResponse({'message':'SUCCESS'},status = 200)
+            data = json.loads(request.body)
+            user_pwd = User.objects.get(email=data['email']).password
+            
+            if user_pwd != data['password']:
+                raise ValidationError('INVALID_USER')
 
-            return JsonResponse({'message':'INVALID_USER'}, status = 401)
-
+            return JsonResponse({'message': 'SUCCESS'})
+        
         except User.DoesNotExist:
-            return JsonResponse({'message':'INVALID_USER'}, status = 401)
-
+            return JsonResponse({'message':'INVALID_USER'}, status=401)
+        except ValidationError as e:
+            return JsonResponse({'message' : e.message}, status = 401)
         except KeyError:
             return JsonResponse({'message':'KEY_ERROR'}, status = 400)
