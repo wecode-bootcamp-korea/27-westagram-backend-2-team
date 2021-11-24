@@ -18,7 +18,7 @@ class SignUpView(View):
             birthday     = data.get('birthday', None)
             gender       = data.get('gender', None)           
             
-            regex_email    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9_-]+\.[a-zA-Z0-9-.]+$'
+            regex_email    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9_-]+\.[a-zA정규식-Z0-9-.]+$'
             regex_password = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}'
             regex_phone    = '/^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$/'
                             
@@ -47,4 +47,18 @@ class SignUpView(View):
         
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
-   
+ 
+class SignInView(View):
+    def post(self, request):
+        try:
+            data      = json.loads(request.body)
+            email     = data["email"]
+            password  = data["password"]
+            
+            if not User.objects.filter(email=email, password=password).exists():
+                return JsonResponse({"message":"INVALID_USER"}, status=401)
+            
+            return JsonResponse({"message" : "SUCCESS"}, status=200)
+        
+        except KeyError:
+              return JsonResponse({"message" : "KEY_ERROR"}, status=400)
