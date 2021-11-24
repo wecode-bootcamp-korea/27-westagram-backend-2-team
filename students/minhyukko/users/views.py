@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 from .models                import User
 from .validator             import is_blank, email_validate, password_validate
-from my_settings            import SECRET_KEY
+from my_settings            import SECRET_KEY, ALGORITHM
 
 class SignupView(View):
     def post(self, request):
@@ -48,7 +48,7 @@ class SigninView(View):
 
             return JsonResponse({
                 'message': 'SUCCESS',
-                'access_token'  : jwt.encode({'user' : user.id}, SECRET_KEY, algorithm='HS256')
+                'access_token'  : jwt.encode({'user' : user.id}, SECRET_KEY, algorithm=ALGORITHM)
             }, status=200)
         
         except User.DoesNotExist:
