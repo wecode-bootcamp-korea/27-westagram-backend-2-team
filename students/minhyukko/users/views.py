@@ -49,8 +49,8 @@ class SigninView(View):
             token = jwt.encode({'user' : user.id}, SECRET_KEY, algorithm='HS256')
 
             return JsonResponse({
-                'message': 'SUCCESS',
-                'access_token'  : token
+                'message'     : 'SUCCESS',
+                'access_token': token
             }, status=200)
         
         except User.DoesNotExist:
