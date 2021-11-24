@@ -10,8 +10,6 @@ regex_password = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*
 def validate_email(email):
     if not re.match(regex_email, email):
         raise ValidationError('INVALID_EMAIL')
-    if User.objects.filter(email=email).exists():
-        raise ValidationError('ALREADY_EXISTS')
 
 def validate_password(password):
     if not re.match(regex_password, password):
