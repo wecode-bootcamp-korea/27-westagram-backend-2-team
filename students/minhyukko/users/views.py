@@ -20,16 +20,16 @@ class SignupView(View):
             if User.objects.filter(email = data['email']).exists():
                 raise ValidationError('DUPLICATED_EMAIL')
 
-            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+            hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode()
             
             User.objects.create(
                 name        = data['name'],
                 email       = data['email'],
-                password    = hashed_password.decode(),
+                password    = hashed_password,
                 address     = data['address'],
                 information = data.get('information')
             )
-            return JsonResponse({'message':'SUCESS'},status=201)
+            return JsonResponse({'message':'SUCCESS'},status=201)
 
         except ValidationError as e:
             return JsonResponse({'message': e.message},status=400)
@@ -46,10 +46,7 @@ class SigninView(View):
             if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')): 
                 raise ValidationError('INVALID_USER')
 
-            return JsonResponse({
-                'message': 'SUCCESS',
-                'access_token'  : jwt.encode({'user' : user.id}, SECRET_KEY, algorithm='HS256')
-            }, status=200)
+            return JsonResponse({'message': 'SUCCESS'}, status=200)
         
         except User.DoesNotExist:
             return JsonResponse({'message':'INVALID_USER'}, status=401)
