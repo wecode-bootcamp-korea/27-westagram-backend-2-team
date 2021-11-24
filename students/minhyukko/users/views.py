@@ -41,9 +41,9 @@ class SigninView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user = User.objects.get(email = data['email'])
+            user = User.objects.filter(email = data['email'], password = data['password'])
             
-            if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')): 
+            if not user.exists():
                 raise ValidationError('INVALID_USER')
 
             return JsonResponse({'message': 'SUCCESS'}, status=200)
