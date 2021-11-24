@@ -5,7 +5,7 @@ from django.http            import JsonResponse, HttpResponse
 from django.core.exceptions import ValidationError
 
 from .models                import User
-from my_settings            import SECRET_KEY, DATABASES
+from my_settings            import SECRET_KEY, DATABASES, ALGORITHM
 from .validation            import validate_email, validate_password
 
 class SignupView(View):
@@ -46,7 +46,7 @@ class SigninView(View):
 
             if User.objects.filter(email=data['email']).exists():
                 if bcrypt.checkpw(data['password'].encode('utf-8'), User.objects.get(email=data['email']).password.encode('utf-8')):
-                    token = jwt.encode({'id' : User.objects.get(email=data['email']).id},SECRET_KEY, algorithm='HS256')
+                    token = jwt.encode({'id' : User.objects.get(email=data['email']).id},SECRET_KEY, algorithm=ALGORITHM)
                     return JsonResponse({'MESSAGE':'SUCCESS', 'TOKEN' : token}, status=200)
     
             return JsonResponse({'massage': 'INVALID_USER'}, status=401)
