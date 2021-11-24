@@ -1,6 +1,6 @@
 from django.db import models
 
-from uesrs.models import Users
+from users.models import Users
 
 class Posting(models.Model): 
     user       = models.ForeignKey(Users, on_delete= models.CASCADE)
