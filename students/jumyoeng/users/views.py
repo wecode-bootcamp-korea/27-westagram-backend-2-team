@@ -1,4 +1,5 @@
 import json, bcrypt
+
 from django.core.exceptions import ValidationError
 
 from django.http import JsonResponse
@@ -45,12 +46,12 @@ class SignInView(View) :
             user = User.objects.get(email=data['email'])
             password = data['password']
 
-            if user :
-                if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')) :
-                    return JsonResponse({'MESSAGE': 'SUCCESS'}, status=200)
-                else :
-                    return JsonResponse({'MESSAGE': 'INVALID_USER / PASSWORD_ERROR'}, status=401)
-            return JsonResponse({'MESSAGE': 'INVALID_USER / EMAIL_ERROR'}, status=401)
+            if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')) :
+                return JsonResponse({'MESSAGE': 'SUCCESS'}, status=200)
+            else :
+                return JsonResponse({'MESSAGE': 'PASSWORD_ERROR'}, status=401)
 
         except KeyError :
             return  JsonResponse({'MESSAGE': 'KEY_ERROR'}, status=400)
+        except User.DoesNotExist :
+            return  JsonResponse({'MESSAGE': 'USER_DOES_NOT_EXIST'}, status=402)
