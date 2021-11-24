@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 from .models                import User
 from .validator             import is_blank, email_validate, password_validate
-from my_settings            import SECRET_KEY
+from my_settings            import SECRET_KEY, ALGORITHM
 
 class SignupView(View):
     def post(self, request):
@@ -46,7 +46,7 @@ class SigninView(View):
             if not bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')): 
                 raise ValidationError('INVALID_USER')
 
-            token = jwt.encode({'user' : user.id}, SECRET_KEY, algorithm='HS256')
+            token = jwt.encode({'user' : user.id}, SECRET_KEY, algorithm=ALGORITHM)
 
             return JsonResponse({
                 'message'     : 'SUCCESS',
