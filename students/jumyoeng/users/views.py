@@ -1,4 +1,5 @@
 import json, bcrypt
+from django.core.exceptions import ValidationError
 
 from django.http import JsonResponse
 from django.views import View
@@ -20,11 +21,8 @@ class SignUpView(View) :
             if User.objects.filter(email=email) :
                 return JsonResponse({'MESSAGE': 'EMAIL_DUPLICATE'}, status=400)
 
-            if not email_validation(email) :
-                return JsonResponse({'MESSAGE': 'EMAIL_INVALID'}, status=400)
-
-            if not password_validation(password) :
-                return JsonResponse({'MESSAGE': 'PASSWORD_INVALID'}, status=400)
+            email_validation(email)
+            password_validation(password)
 
             User.objects.create(
                 name         = name,
@@ -37,6 +35,8 @@ class SignUpView(View) :
 
         except KeyError :
             return  JsonResponse({'MESSAGE': 'KEY_ERROR'}, status=400)
+        except ValidationError :
+            return  JsonResponse({'MESSAGE': 'Validation_ERROR'}, status=402)
 
 class SignInView(View) :
     def post(self, request) :

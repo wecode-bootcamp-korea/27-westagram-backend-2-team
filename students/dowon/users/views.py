@@ -1,10 +1,11 @@
-import json, re
+import json
 
-from django.views    import View
-from django.http     import JsonResponse, HttpResponse
+from django.views     import View
+from django.http      import JsonResponse, HttpResponse
 
-from .models         import User
-from my_settings     import SECRET_KEY, DATABASES
+from .models          import User
+from my_settings      import SECRET_KEY, DATABASES
+from .validation      import validate_email, validate_password
 
 class SignupView(View):
     def post(self, request):
@@ -16,17 +17,9 @@ class SignupView(View):
             password     = data['password']
             phone_number = data['phone_number']
             information  = data.get('information', None)
-
-            if User.objects.filter(email=email).exists():
-                return JsonResponse({'message' : 'ALREADY_EXISTS'}, status = 400)
-
-            regex_email    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9_-]+\.[a-zA-Z0-9-.]+$'
-            regex_password = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}'
-
-            if re.match(regex_email, email) is None:
-                return JsonResponse({'message' : 'INVALID_EMAIL'}, status = 400)
-            if re.match(regex_password, password) is None:
-                return JsonResponse({'message' : 'INVALID_PASSWORD'}, status = 400)
+            
+            validate_email(email)
+            validate_password(password)
 
             User.objects.create(
                 name         = name, 
@@ -39,3 +32,18 @@ class SignupView(View):
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+
+class SigninView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+
+            if User.objects.filter(email=data['email'], password=data['password']).exists():
+                return JsonResponse({'message': 'SUCCESS'}, status=200)
+
+            return JsonResponse({'massage': 'INVALID_USER'}, status=401)
+
+        except KeyError:
+            return JsonResponse({'massage': 'KEY_ERROR'}, status=400)
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'INVALID_USER'}, status=401)

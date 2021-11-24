@@ -1,26 +1,23 @@
-import json, re
+import json
  
 from django.views           import View
 from django.http            import JsonResponse
 from django.core.exceptions import ValidationError
 
 from .models                import User
+from .validator             import is_blank, email_validate, password_validate
 
-class UserView(View):
+class SignupView(View):
     def post(self, request):
-        data            = json.loads(request.body)
-        regexr_email    = '[a-zA-Z0-9]+\.?\w*@\w+[.]?\w*[.]+\w{2,3}'
-        regexr_password = '(?=.*[A-Za-z])(?=.*\d)(?=.*[~!@#$^&*()+|=])[A-Za-z\d~!@#$%^&*()+|=]{8,}'
-
         try:
-            if data.get('email') is None:
-                raise KeyError('Email_is_Blank')
-            if data.get('password') is None:
-                raise KeyError('Password_is_Blank')
-            if re.match(regexr_email, data['email']) is None or re.match(regexr_password,data['password']) is None:
-                raise ValidationError('Invalid_Key')
+            data = json.loads(request.body)
+
+            is_blank(data.get('email'), data.get('password'))
+            email_validate(data['email'])
+            password_validate(data['password'])
+            
             if User.objects.filter(email = data['email']).exists():
-                return JsonResponse({'message':'DUPLICATED_EMAIL'}, status=400)
+                raise ValidationError('DUPLICATED_EMAIL')
 
             User.objects.create(
                 name        = data['name'],
@@ -36,3 +33,19 @@ class UserView(View):
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status=400)
+    
+class SigninView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            user = User.objects.filter(email = data['email'], password = data['password'])
+            
+            if not user.exists():
+                raise ValidationError('INVALID_USER')
+
+            return JsonResponse({'message': 'SUCCESS'})
+        
+        except ValidationError as e:
+            return JsonResponse({'message' : e.message}, status = 401)
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status = 400)
