@@ -1,5 +1,5 @@
-from django.views import View
+# from django.views import View
 
-class PostingView(View):
-    def posting(self, request):
+# class PostingView(View):
+#     def posting(self, request):
         
