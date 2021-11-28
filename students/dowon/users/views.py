@@ -1,11 +1,12 @@
-import json, bcrypt
+import json, bcrypt, jwt
 
-from django.views     import View
-from django.http      import JsonResponse, HttpResponse
+from django.views           import View
+from django.http            import JsonResponse, HttpResponse
+from django.core.exceptions import ValidationError
 
-from .models          import User
-from my_settings      import SECRET_KEY, DATABASES
-from .validation      import validate_email, validate_password
+from .models                import User
+from my_settings            import SECRET_KEY, ALGORITHM
+from .validation            import validate_email, validate_password
 
 class SignupView(View):
     def post(self, request):
@@ -17,6 +18,9 @@ class SignupView(View):
             password     = data['password']
             phone_number = data['phone_number']
             information  = data.get('information', None)
+
+            if User.objects.filter(email=email).exists():
+                raise ValidationError('ALREADY_EXISTS')
             
             validate_email(email)
             validate_password(password)
@@ -40,8 +44,9 @@ class SigninView(View):
         try:
             data = json.loads(request.body)
 
-            if User.objects.filter(email=data['email'], password=data['password']).exists():
-                return JsonResponse({'message':'SUCCESS'}, status=200)
+            if bcrypt.checkpw(data['password'].encode('utf-8'), User.objects.get(email=data['email']).password.encode('utf-8')):
+                    token = jwt.encode({'id':User.objects.get(email=data['email']).id}, SECRET_KEY, algorithm=ALGORITHM)
+                    return JsonResponse({'MESSAGE':'SUCCESS', 'TOKEN':token}, status=200)
 
             return JsonResponse({'massage': 'INVALID_USER'}, status=401)
 
